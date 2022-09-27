@@ -2,6 +2,7 @@
 
 ## Prerequisite
 * A huginn server
+* ntfy.sh topic name and app
 
 ## Setup
 Two values that you will need to change in the scenario json file:
