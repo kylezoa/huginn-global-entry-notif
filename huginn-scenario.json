@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "name": "Global Entry Notifier (ntfy.sh)",
+  "description": "Checks the undocumented CBP API for available appointments. I recommend setting the check to be every 15s (it takes maybe a minute for an appt to appear and disappear).\r\n\r\n(thanks to https://github.com/Drewster727/goes-notify for background information)",
+  "source_url": false,
+  "guid": "25bfe7f7ce965cb9fc2d4863a7e809e3",
+  "tag_fg_color": "#ffffff",
+  "tag_bg_color": "#5bc0de",
+  "icon": "gear",
+  "exported_at": "2022-09-27T19:14:09Z",
+  "agents": [
+    {
+      "type": "Agents::PostAgent",
+      "name": "ntfy.sh GE high",
+      "disabled": true,
+      "guid": "0e99d68f3b129d7a27938cf0ba6ca947",
+      "options": {
+        "post_url": "https://ntfy.sh/",
+        "expected_receive_period_in_days": "19",
+        "content_type": "json",
+        "method": "post",
+        "payload": {
+          "message": "Appt available at {{time}}",
+          "click": "https://ttp.dhs.gov/",
+          "title": "Global Entry",
+          "topic": "change_this_topic_name_asdf"
+        },
+        "emit_events": "false",
+        "no_merge": "false",
+        "output_mode": "clean",
+        "headers": {
+          "Priority": "high"
+        }
+      },
+      "schedule": "never",
+      "keep_events_for": 21600,
+      "propagate_immediately": true
+    },
+    {
+      "type": "Agents::WebsiteAgent",
+      "name": "[website] global entry SFAPI",
+      "disabled": true,
+      "guid": "570f3fde921cc8bf913d9bf162e16520",
+      "options": {
+        "expected_update_period_in_days": "2",
+        "url": "https://ttp.cbp.dhs.gov/schedulerapi/slots?orderBy=soonest&limit=1&locationId=***change_this_location_Id***&minimum=1",
+        "type": "json",
+        "mode": "on_change",
+        "extract": {
+          "time": {
+            "path": "[*].startTimestamp"
+          }
+        }
+      },
+      "schedule": "never",
+      "keep_events_for": 21600,
+      "propagate_immediately": false
+    },
+    {
+      "type": "Agents::SchedulerAgent",
+      "name": "15s schedule",
+      "disabled": true,
+      "guid": "a2117fa1f173ea0c57bff7ed4f3e3d13",
+      "options": {
+        "action": "run",
+        "schedule": "*/15 * * * * *"
+      }
+    }
+  ],
+  "links": [
+    {
+      "source": 1,
+      "receiver": 0
+    }
+  ],
+  "control_links": [
+    {
+      "controller": 2,
+      "control_target": 1
+    }
+  ]
+}
